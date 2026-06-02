@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KGO Shop Poster Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="editor">
+        <header class="topbar">
+          <div class="brand-badge">KGO</div>
+          <div>
+            <p class="eyebrow">@kgo_shop</p>
+            <h1>MLBB Content Generator</h1>
+          </div>
+        </header>
+
+        <form class="controls" id="posterForm">
+          <label>
+            Jenis output
+            <select id="outputMode">
+              <option value="image">Gambar feed 4:5</option>
+              <option value="video">Video template 9:16</option>
+            </select>
+          </label>
+
+          <label>
+            Gambar utama
+            <input id="imageInput" type="file" accept="image/*">
+          </label>
+
+          <div class="two-col event-only">
+            <label>
+              PNG kiri event
+              <input id="eventCharacterInput" type="file" accept="image/png,image/webp,image/*">
+            </label>
+            <label>
+              Panel misi event
+              <input id="eventPanelInput" type="file" accept="image/*">
+            </label>
+          </div>
+
+          <div class="two-col starlight-only">
+            <label>
+              PNG karakter starlight
+              <input id="starlightCharacterInput" type="file" accept="image/png,image/webp,image/*">
+            </label>
+            <label>
+              Preview video skin
+              <input id="starlightPreviewInput" type="file" accept="image/*">
+            </label>
+          </div>
+
+          <div class="two-col starlight-only">
+            <label>
+              Thumbnail skin kiri
+              <input id="starlightSkinLeftInput" type="file" accept="image/*">
+            </label>
+            <label>
+              Thumbnail skin kanan
+              <input id="starlightSkinRightInput" type="file" accept="image/*">
+            </label>
+          </div>
+
+          <label class="video-only">
+            Video tengah
+            <input id="videoInput" type="file" accept="video/*">
+          </label>
+
+          <label>
+            Judul besar
+            <textarea id="headline" rows="4">SKIN EPIC KHUFRA INI BISA KALIAN DAPATKAN SECARA GRATIS BY MISI PADA 17 SEPTEMBER!</textarea>
+          </label>
+
+          <div class="two-col">
+            <label>
+              Label atas
+              <input id="kicker" type="text" value="NEWS MLBB">
+            </label>
+            <label>
+              Teks swipe
+              <input id="swipeText" type="text" value="SWIPE>>">
+            </label>
+          </div>
+
+          <div class="two-col">
+            <label>
+              Badge kiri
+              <input id="badgeText" type="text" value="KGO SHOP">
+            </label>
+            <label>
+              Website
+              <input id="website" type="text" value="www.kgogaming.com">
+            </label>
+          </div>
+
+          <div class="two-col">
+            <label>
+              Source
+              <input id="sourceText" type="text" value="SC VT: VOLTA">
+            </label>
+            <label class="video-only">
+              Tagline atas
+              <input id="topTagline" type="text" value="TOP UP ALL GAME HEMAT & CEPAT SE INDONESIA 100%">
+            </label>
+            <label>
+              Tema
+              <select id="theme">
+                <option value="news">News MLBB</option>
+                <option value="event">Recharge Event</option>
+                <option value="versus">Versus / Comparison</option>
+                <option value="collage">Grid Collector</option>
+                <option value="starlight">Skin Starlight</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button type="submit">Generate gambar</button>
+            <button class="secondary" id="downloadButton" type="button">Download PNG</button>
+          </div>
+
+          <div class="actions video-only">
+            <button id="playVideoButton" type="button">Preview video</button>
+            <button class="secondary" id="exportVideoButton" type="button">Export WEBM</button>
+          </div>
+
+          <p class="status-text" id="videoStatus">Upload video untuk preview dan export template.</p>
+        </form>
+
+        <section class="caption-box">
+          <div class="caption-title">Caption cepat</div>
+          <pre id="captionOutput"></pre>
+        </section>
+      </section>
+
+      <section class="preview-stage">
+        <div class="canvas-wrap">
+          <canvas id="posterCanvas" width="1080" height="1350" aria-label="Preview poster Instagram"></canvas>
+        </div>
+        <video id="sourceVideo" playsinline muted></video>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
