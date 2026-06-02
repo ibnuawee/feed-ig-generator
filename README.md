@@ -53,27 +53,6 @@ http://127.0.0.1:5173
 5. Klik `Generate gambar`.
 6. Klik `Download PNG` untuk poster atau `Export WEBM` untuk video.
 
-## Deploy ke Vercel
-
-Project ini tidak membutuhkan build step.
-
-Pengaturan Vercel:
-
-```text
-Framework Preset: Other
-Build Command: kosong
-Output Directory: .
-Install Command: kosong
-```
-
-File `vercel.json` sudah disiapkan:
-
-```json
-{
-  "cleanUrls": true,
-  "trailingSlash": false
-}
-```
 
 ## Catatan Teknis
 
