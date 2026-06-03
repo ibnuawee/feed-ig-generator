@@ -581,6 +581,9 @@ function drawVideoSlot() {
   ctx.save();
   ctx.fillStyle = "#06124a";
   ctx.fillRect(slot.x, slot.y, slot.width, slot.height);
+  ctx.beginPath();
+  ctx.rect(slot.x, slot.y, slot.width, slot.height);
+  ctx.clip();
 
   if (sourceVideo.readyState >= 2) {
     drawAdjustedImage(sourceVideo, slot.x, slot.y, slot.width, slot.height, "cover", "videoMain");
@@ -1025,7 +1028,7 @@ async function exportVideo() {
     link.download = `kgo-shop-video-template.${exportType.extension}`;
     link.click();
     URL.revokeObjectURL(url);
-    videoStatus.textContent = "Export selesai. File WEBM sudah diunduh.";
+    videoStatus.textContent = `Export selesai. File ${exportType.extension.toUpperCase()} sudah diunduh.`;
     exportVideoButton.disabled = false;
   };
 
@@ -1163,7 +1166,7 @@ videoInput.addEventListener("change", () => {
   sourceVideo.load();
   adjustLayerInput.value = "videoMain";
   syncAdjustmentControls();
-  videoStatus.textContent = "Video siap. Klik Preview video atau Export WEBM.";
+  videoStatus.textContent = "Video siap. Klik Preview video atau Export video.";
 });
 
 sourceVideo.addEventListener("loadedmetadata", drawPoster);
