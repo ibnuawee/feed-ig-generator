@@ -142,6 +142,10 @@ select:focus {
   gap: 10px;
 }
 
+.video-actions {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .position-panel {
   display: grid;
   gap: 12px;

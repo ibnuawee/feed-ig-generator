@@ -16,6 +16,7 @@ const resetAdjustButton = document.querySelector("#resetAdjustButton");
 const videoInput = document.querySelector("#videoInput");
 const downloadButton = document.querySelector("#downloadButton");
 const playVideoButton = document.querySelector("#playVideoButton");
+const exportVideoFrameButton = document.querySelector("#exportVideoFrameButton");
 const exportVideoButton = document.querySelector("#exportVideoButton");
 const sourceVideo = document.querySelector("#sourceVideo");
 const videoStatus = document.querySelector("#videoStatus");
@@ -30,6 +31,7 @@ let starlightSkinLeftImage = null;
 let starlightSkinRightImage = null;
 let animationFrame = null;
 let videoObjectUrl = "";
+let exportVideoFrameOnly = false;
 const kgoLogo = new Image();
 kgoLogo.src = "assets/kgo-logo.png";
 kgoLogo.onload = drawPoster;
@@ -449,7 +451,11 @@ function drawVideoTemplate(data) {
   drawDecorations(1920);
   drawTopLogo(data.badgeText);
   drawVideoTopTagline(data.topTagline);
-  drawVideoSlot();
+  if (exportVideoFrameOnly) {
+    clearVideoSlot();
+  } else {
+    drawVideoSlot();
+  }
   drawHeadline(data.headline, 1330, 106, 86, 940, 3);
   drawSource(data.sourceText, 1660, 1700);
   drawWebsite(data.website, 1740);
@@ -472,15 +478,7 @@ function drawBackground(theme, gridTop, gridBottom) {
   ctx.globalAlpha = 0.28;
   ctx.strokeStyle = "#16d8ff";
   ctx.lineWidth = 2;
-  for (let x = 110; x < canvas.width; x += 360) {
-    line(x, 0, x, canvas.height);
-  }
-  for (let x = 110; x < canvas.width; x += 100) {
-    line(x, gridTop, x, gridBottom);
-  }
-  for (let y = gridTop; y < gridBottom; y += 88) {
-    line(0, y, canvas.width, y);
-  }
+  drawGridLines(gridTop, gridBottom);
   ctx.restore();
 
   drawGlow(820, 180, 330, "rgba(0,216,255,0.34)");
@@ -488,6 +486,17 @@ function drawBackground(theme, gridTop, gridBottom) {
   drawCloud(90, canvas.height * 0.64, 1.15);
   drawCloud(935, canvas.height * 0.48, 0.82);
   drawCloud(930, 92, 0.65);
+}
+
+function drawGridLines() {
+  const spacing = 180;
+
+  for (let x = spacing; x < canvas.width; x += spacing) {
+    line(x, 0, x, canvas.height);
+  }
+  for (let y = spacing; y < canvas.height; y += spacing) {
+    line(0, y, canvas.width, y);
+  }
 }
 
 function drawHero(image, theme) {
@@ -603,6 +612,11 @@ function drawVideoSlot() {
   ctx.fillStyle = shade;
   ctx.fillRect(slot.x, slot.y, slot.width, slot.height);
   ctx.restore();
+}
+
+function clearVideoSlot() {
+  const slot = { x: 0, y: 430, width: 1080, height: 650 };
+  ctx.clearRect(slot.x, slot.y, slot.width, slot.height);
 }
 
 function drawTopLogo(text) {
@@ -1050,6 +1064,20 @@ async function exportVideo() {
   window.setTimeout(stopRecording, Math.min(maxDuration * 1000 + 300, 60000));
 }
 
+function exportVideoFramePng() {
+  exportVideoFrameOnly = true;
+  drawPoster();
+
+  const link = document.createElement("a");
+  link.download = "kgo-shop-video-frame.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+
+  exportVideoFrameOnly = false;
+  drawPoster();
+  videoStatus.textContent = "PNG frame sudah diunduh. Area video tengah dibuat transparan.";
+}
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   drawPoster();
@@ -1203,6 +1231,7 @@ downloadButton.addEventListener("click", () => {
 });
 
 exportVideoButton.addEventListener("click", exportVideo);
+exportVideoFrameButton.addEventListener("click", exportVideoFramePng);
 
 drawPoster();
 syncAdjustmentControls();
