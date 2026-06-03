@@ -8,6 +8,11 @@ const starlightCharacterInput = document.querySelector("#starlightCharacterInput
 const starlightPreviewInput = document.querySelector("#starlightPreviewInput");
 const starlightSkinLeftInput = document.querySelector("#starlightSkinLeftInput");
 const starlightSkinRightInput = document.querySelector("#starlightSkinRightInput");
+const adjustLayerInput = document.querySelector("#adjustLayer");
+const adjustXInput = document.querySelector("#adjustX");
+const adjustYInput = document.querySelector("#adjustY");
+const adjustZoomInput = document.querySelector("#adjustZoom");
+const resetAdjustButton = document.querySelector("#resetAdjustButton");
 const videoInput = document.querySelector("#videoInput");
 const downloadButton = document.querySelector("#downloadButton");
 const playVideoButton = document.querySelector("#playVideoButton");
@@ -32,6 +37,17 @@ const kgoLogoCrop = { x: 31, y: 545, width: 2438, height: 1410 };
 const starlightLogo = new Image();
 starlightLogo.src = "assets/starlight-logo.png";
 starlightLogo.onload = drawPoster;
+
+const imageAdjustments = {
+  main: { x: 0, y: 0, zoom: 1 },
+  eventCharacter: { x: 0, y: 0, zoom: 1 },
+  eventPanel: { x: 0, y: 0, zoom: 1 },
+  starlightCharacter: { x: 0, y: 0, zoom: 1 },
+  starlightPreview: { x: 0, y: 0, zoom: 1 },
+  starlightSkinLeft: { x: 0, y: 0, zoom: 1 },
+  starlightSkinRight: { x: 0, y: 0, zoom: 1 },
+  videoMain: { x: 0, y: 0, zoom: 1 }
+};
 
 const fields = {
   outputMode: document.querySelector("#outputMode"),
@@ -149,7 +165,7 @@ function drawRechargeCharacter(image) {
   ctx.clip();
 
   if (image) {
-    drawImageContain(image, area.x, area.y, area.width, area.height);
+    drawAdjustedImage(image, area.x, area.y, area.width, area.height, "contain", "eventCharacter");
   } else {
     drawEventPlaceholder(area, "UPLOAD PNG KIRI");
   }
@@ -176,7 +192,7 @@ function drawRechargeMissionPanel(image) {
   if (image) {
     ctx.fillStyle = "rgba(9, 26, 65, 0.82)";
     ctx.fillRect(panel.x + 4, panel.y + 4, panel.width - 8, panel.height - 8);
-    drawImageContain(image, panel.x + 4, panel.y + 4, panel.width - 8, panel.height - 8);
+    drawAdjustedImage(image, panel.x + 4, panel.y + 4, panel.width - 8, panel.height - 8, "contain", "eventPanel");
   } else {
     drawEventPlaceholder({ x: panel.x + 4, y: panel.y + 4, width: panel.width - 8, height: panel.height - 8 }, "UPLOAD PANEL MISI");
   }
@@ -208,7 +224,7 @@ function drawStarlightCharacter(image) {
   ctx.rect(-90, 360, 700, 900);
   ctx.clip();
   if (image) {
-    drawImageContain(image, area.x, area.y, area.width, area.height);
+    drawAdjustedImage(image, area.x, area.y, area.width, area.height, "contain", "starlightCharacter");
   } else {
     drawEventPlaceholder(area, "UPLOAD KARAKTER");
   }
@@ -232,7 +248,7 @@ function drawStarlightPreview(image) {
   roundedRect(panel.x + 4, panel.y + 4, panel.width - 8, panel.height - 8, 15);
   ctx.clip();
   if (image) {
-    drawImageCover(image, panel.x + 4, panel.y + 4, panel.width - 8, panel.height - 8);
+    drawAdjustedImage(image, panel.x + 4, panel.y + 4, panel.width - 8, panel.height - 8, "cover", "starlightPreview");
   } else {
     drawEventPlaceholder({ x: panel.x + 4, y: panel.y + 4, width: panel.width - 8, height: panel.height - 8 }, "UPLOAD PREVIEW");
   }
@@ -250,8 +266,8 @@ function drawStarlightThumbs(leftImage, rightImage) {
     { x: 600, y: 795, width: 125, height: 205 },
     { x: 807, y: 795, width: 125, height: 205 }
   ];
-  drawStarlightCard(topCards[0], leftImage, "SKIN");
-  drawStarlightCard(topCards[1], rightImage, "SKIN");
+  drawStarlightCard(topCards[0], leftImage, "LEFT");
+  drawStarlightCard(topCards[1], rightImage, "RIGHT");
 }
 
 function drawStarlightCard(card, image, label) {
@@ -265,9 +281,10 @@ function drawStarlightCard(card, image, label) {
   roundedRect(card.x + 4, card.y + 4, card.width - 8, card.height - 8, 6);
   ctx.clip();
   if (image) {
-    drawImageCover(image, card.x + 4, card.y + 4, card.width - 8, card.height - 8);
+    const layer = label === "LEFT" ? "starlightSkinLeft" : label === "RIGHT" ? "starlightSkinRight" : null;
+    drawAdjustedImage(image, card.x + 4, card.y + 4, card.width - 8, card.height - 8, "cover", layer);
   } else {
-    drawEventPlaceholder({ x: card.x + 4, y: card.y + 4, width: card.width - 8, height: card.height - 8 }, label);
+    drawEventPlaceholder({ x: card.x + 4, y: card.y + 4, width: card.width - 8, height: card.height - 8 }, "SKIN");
   }
   ctx.restore();
 }
@@ -476,7 +493,7 @@ function drawBackground(theme, gridTop, gridBottom) {
 function drawHero(image, theme) {
   const heroHeight = theme === "event" ? 880 : 760;
   if (image) {
-    drawImageCover(image, 0, 0, canvas.width, heroHeight);
+    drawAdjustedImage(image, 0, 0, canvas.width, heroHeight, "cover", "main");
   } else {
     const grad = ctx.createLinearGradient(0, 0, canvas.width, heroHeight);
     grad.addColorStop(0, "#273e9f");
@@ -521,7 +538,7 @@ function drawCollagePanel(image) {
   ctx.rect(panel.x + 3, panel.y + 3, panel.width - 6, panel.height - 6);
   ctx.clip();
   if (image) {
-    drawImageCover(image, panel.x + 3, panel.y + 3, panel.width - 6, panel.height - 6);
+    drawAdjustedImage(image, panel.x + 3, panel.y + 3, panel.width - 6, panel.height - 6, "cover", "main");
   } else {
     const grad = ctx.createLinearGradient(0, panel.y, 0, panel.y + panel.height);
     grad.addColorStop(0, "#2a88d4");
@@ -566,7 +583,7 @@ function drawVideoSlot() {
   ctx.fillRect(slot.x, slot.y, slot.width, slot.height);
 
   if (sourceVideo.readyState >= 2) {
-    drawImageCover(sourceVideo, slot.x, slot.y, slot.width, slot.height);
+    drawAdjustedImage(sourceVideo, slot.x, slot.y, slot.width, slot.height, "cover", "videoMain");
   } else {
     const grad = ctx.createLinearGradient(0, slot.y, 0, slot.y + slot.height);
     grad.addColorStop(0, "#1f7fab");
@@ -617,7 +634,6 @@ function drawDecorations(height) {
   ctx.lineWidth = 8;
   ctx.globalAlpha = 0.95;
   circle(72, height * 0.72, 18);
-  circle(930, height * 0.68, 15);
   circle(1000, height * 0.83, 11);
   circle(755, height * 0.62, 10);
   circle(350, 18, 14);
@@ -628,13 +644,6 @@ function drawDecorations(height) {
   drawSquares(64, height - 84);
   drawSquares(1000, height - 84);
 
-  ctx.save();
-  ctx.globalAlpha = 0.35;
-  ctx.strokeStyle = "#28e2ff";
-  ctx.lineWidth = 4;
-  line(140, height - 410, 310, height - 690);
-  line(720, height - 650, 980, height - 900);
-  ctx.restore();
 }
 
 function drawBrandBadge(text, x, y, rotation) {
@@ -855,6 +864,22 @@ function drawImageContain(image, x, y, width, height) {
   ctx.drawImage(image, dx, dy, dw, dh);
 }
 
+function drawAdjustedImage(image, x, y, width, height, fit, layer) {
+  const sourceWidth = image.videoWidth || image.width;
+  const sourceHeight = image.videoHeight || image.height;
+  const adjustment = layer ? imageAdjustments[layer] : null;
+  const zoom = adjustment ? adjustment.zoom : 1;
+  const baseScale = fit === "cover"
+    ? Math.max(width / sourceWidth, height / sourceHeight)
+    : Math.min(width / sourceWidth, height / sourceHeight);
+  const scale = baseScale * zoom;
+  const dw = sourceWidth * scale;
+  const dh = sourceHeight * scale;
+  const dx = x + (width - dw) / 2 + (adjustment ? adjustment.x : 0);
+  const dy = y + (height - dh) / 2 + (adjustment ? adjustment.y : 0);
+  ctx.drawImage(image, dx, dy, dw, dh);
+}
+
 function drawImageContainCrop(image, sx, sy, sw, sh, x, y, width, height) {
   const scale = Math.min(width / sw, height / sh);
   const dw = sw * scale;
@@ -974,26 +999,30 @@ async function exportVideo() {
     return;
   }
 
-  const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
-    ? "video/webm;codecs=vp9"
-    : "video/webm";
+  const exportTypes = [
+    { mimeType: "video/mp4;codecs=h264,aac", extension: "mp4" },
+    { mimeType: "video/mp4", extension: "mp4" },
+    { mimeType: "video/webm;codecs=vp9", extension: "webm" },
+    { mimeType: "video/webm", extension: "webm" }
+  ];
+  const exportType = exportTypes.find((type) => MediaRecorder.isTypeSupported(type.mimeType)) || exportTypes[3];
   const stream = canvas.captureStream(30);
   const videoStream = sourceVideo.captureStream ? sourceVideo.captureStream() : null;
   if (videoStream) {
     videoStream.getAudioTracks().forEach((track) => stream.addTrack(track));
   }
   const chunks = [];
-  const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 9000000 });
+  const recorder = new MediaRecorder(stream, { mimeType: exportType.mimeType, videoBitsPerSecond: 9000000 });
 
   recorder.ondataavailable = (event) => {
     if (event.data.size) chunks.push(event.data);
   };
   recorder.onstop = () => {
-    const blob = new Blob(chunks, { type: "video/webm" });
+    const blob = new Blob(chunks, { type: exportType.mimeType });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "kgo-shop-video-template.webm";
+    link.download = `kgo-shop-video-template.${exportType.extension}`;
     link.click();
     URL.revokeObjectURL(url);
     videoStatus.textContent = "Export selesai. File WEBM sudah diunduh.";
@@ -1050,6 +1079,35 @@ fields.theme.addEventListener("change", () => {
   drawPoster();
 });
 
+adjustLayerInput.addEventListener("change", syncAdjustmentControls);
+
+adjustXInput.addEventListener("input", () => {
+  const adjustment = getActiveAdjustment();
+  adjustment.x = Number(adjustXInput.value);
+  drawPoster();
+});
+
+adjustYInput.addEventListener("input", () => {
+  const adjustment = getActiveAdjustment();
+  adjustment.y = Number(adjustYInput.value);
+  drawPoster();
+});
+
+adjustZoomInput.addEventListener("input", () => {
+  const adjustment = getActiveAdjustment();
+  adjustment.zoom = Number(adjustZoomInput.value) / 100;
+  drawPoster();
+});
+
+resetAdjustButton.addEventListener("click", () => {
+  const adjustment = getActiveAdjustment();
+  adjustment.x = 0;
+  adjustment.y = 0;
+  adjustment.zoom = 1;
+  syncAdjustmentControls();
+  drawPoster();
+});
+
 imageInput.addEventListener("change", () => {
   loadImageFromInput(imageInput, (image) => {
     heroImage = image;
@@ -1059,12 +1117,16 @@ imageInput.addEventListener("change", () => {
 eventCharacterInput.addEventListener("change", () => {
   loadImageFromInput(eventCharacterInput, (image) => {
     eventCharacterImage = image;
+    adjustLayerInput.value = "eventCharacter";
+    syncAdjustmentControls();
   });
 });
 
 eventPanelInput.addEventListener("change", () => {
   loadImageFromInput(eventPanelInput, (image) => {
     eventPanelImage = image;
+    adjustLayerInput.value = "eventPanel";
+    syncAdjustmentControls();
   });
 });
 
@@ -1099,6 +1161,8 @@ videoInput.addEventListener("change", () => {
   videoObjectUrl = URL.createObjectURL(file);
   sourceVideo.src = videoObjectUrl;
   sourceVideo.load();
+  adjustLayerInput.value = "videoMain";
+  syncAdjustmentControls();
   videoStatus.textContent = "Video siap. Klik Preview video atau Export WEBM.";
 });
 
@@ -1138,6 +1202,7 @@ downloadButton.addEventListener("click", () => {
 exportVideoButton.addEventListener("click", exportVideo);
 
 drawPoster();
+syncAdjustmentControls();
 
 function loadImageFromInput(input, setImage) {
   const file = input.files[0];
@@ -1150,4 +1215,15 @@ function loadImageFromInput(input, setImage) {
     drawPoster();
   };
   image.src = URL.createObjectURL(file);
+}
+
+function getActiveAdjustment() {
+  return imageAdjustments[adjustLayerInput.value] || imageAdjustments.main;
+}
+
+function syncAdjustmentControls() {
+  const adjustment = getActiveAdjustment();
+  adjustXInput.value = String(adjustment.x);
+  adjustYInput.value = String(adjustment.y);
+  adjustZoomInput.value = String(Math.round(adjustment.zoom * 100));
 }

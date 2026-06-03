@@ -120,6 +120,39 @@
             </label>
           </div>
 
+          <section class="position-panel" aria-label="Atur posisi gambar">
+            <label>
+              Atur posisi gambar
+              <select id="adjustLayer">
+                <option value="main">Gambar utama</option>
+                <option value="eventCharacter">PNG kiri event</option>
+                <option value="eventPanel">Panel misi event</option>
+                <option value="starlightCharacter">PNG karakter starlight</option>
+                <option value="starlightPreview">Preview video skin</option>
+                <option value="starlightSkinLeft">Thumbnail skin kiri</option>
+                <option value="starlightSkinRight">Thumbnail skin kanan</option>
+                <option value="videoMain">Video tengah</option>
+              </select>
+            </label>
+
+            <div class="slider-grid">
+              <label>
+                Geser X
+                <input id="adjustX" type="range" min="-350" max="350" value="0">
+              </label>
+              <label>
+                Geser Y
+                <input id="adjustY" type="range" min="-350" max="350" value="0">
+              </label>
+              <label>
+                Zoom
+                <input id="adjustZoom" type="range" min="50" max="200" value="100">
+              </label>
+            </div>
+
+            <button class="secondary" id="resetAdjustButton" type="button">Reset posisi</button>
+          </section>
+
           <div class="actions">
             <button type="submit">Generate gambar</button>
             <button class="secondary" id="downloadButton" type="button">Download PNG</button>

@@ -142,6 +142,26 @@ select:focus {
   gap: 10px;
 }
 
+.position-panel {
+  display: grid;
+  gap: 12px;
+  border: 1px solid rgba(0, 61, 157, 0.16);
+  border-radius: 8px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.slider-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+input[type="range"] {
+  padding: 0;
+  accent-color: var(--cyan);
+}
+
 button {
   min-height: 48px;
   border: 0;
@@ -279,6 +299,7 @@ canvas {
   }
 
   .two-col,
+  .slider-grid,
   .actions {
     grid-template-columns: 1fr;
   }
