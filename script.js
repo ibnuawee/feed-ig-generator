@@ -337,18 +337,33 @@ function drawStarlightTitle(kickerText, titleText, skinText) {
   const words = title.split(" ");
   const last = words.pop() || "AGUSTUS";
   const first = words.join(" ") || "STARLIGHT";
-  ctx.font = "400 90px Anton, Impact, sans-serif";
+  let titleSize = 90;
+  const maxTitleWidth = 960;
+  const gap = 10;
+  ctx.font = `400 ${titleSize}px Anton, Impact, sans-serif`;
+  while (ctx.measureText(first).width + ctx.measureText(last).width + gap > maxTitleWidth && titleSize > 58) {
+    titleSize -= 2;
+    ctx.font = `400 ${titleSize}px Anton, Impact, sans-serif`;
+  }
+
+  const firstWidth = ctx.measureText(first).width;
+  const totalWidth = firstWidth + ctx.measureText(last).width + gap;
+  const titleX = (canvas.width - totalWidth) / 2;
+  const titleY = 300;
+
   ctx.lineJoin = "round";
   ctx.lineWidth = 12;
+  ctx.textAlign = "left";
   ctx.strokeStyle = "#ffffff";
   ctx.fillStyle = "#092067";
-  ctx.strokeText(first, 393, 300);
-  ctx.fillText(first, 393, 300);
+  ctx.strokeText(first, titleX, titleY);
+  ctx.fillText(first, titleX, titleY);
   ctx.fillStyle = "#19dfff";
-  ctx.strokeText(last, 745, 300);
-  ctx.fillText(last, 745, 300);
+  ctx.strokeText(last, titleX + firstWidth + gap, titleY);
+  ctx.fillText(last, titleX + firstWidth + gap, titleY);
 
   ctx.font = "900 italic 32px Inter, sans-serif";
+  ctx.textAlign = "center";
   const pillWidth = Math.min(600, Math.max(380, ctx.measureText(skin).width + 86));
   const pillX = (canvas.width - pillWidth) / 2;
   const pillY = 338;
